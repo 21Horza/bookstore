@@ -9,20 +9,20 @@ function App() {
   const theme = createTheme({
     palette: {
       mode: "dark",
-    },
-    primary: {
-      main: "#2196f3",
-    },
-    secondary: {
-      main: "#4caf50",
+      primary: {
+        main: "#2196f3",
+      },
+      secondary: {
+        main: "#4caf50",
+      },
     },
   });
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Navbar />
       <Router>
+        <Navbar />
         <Routes>
           <Route path="/" element={<div>Hello world</div>} />
         </Routes>
