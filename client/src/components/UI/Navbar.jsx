@@ -14,6 +14,7 @@ import {
 import BookIcon from "@mui/icons-material/Book";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import "../../styles/Navbar.css";
 
 const pages = ["All Books", "Publish"];
 const settings = ["Login", "Logout"];
@@ -115,7 +116,10 @@ const ResponsiveAppBar = () => {
           >
             Bookstore
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+          <Box
+            sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
+            className="nav-menu-md"
+          >
             {pages.map((page) => (
               <Button
                 key={page}
