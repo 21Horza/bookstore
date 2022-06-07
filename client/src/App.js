@@ -1,11 +1,28 @@
 import "./App.css";
-import { ThemeProvider } from "@mui/material";
+import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { createTheme } from "@mui/material";
-import { CssBaseline } from "@mui/material";
+import { useState, useEffect } from "react";
 import Navbar from "./components/UI/Navbar";
+import axios from "axios";
 
 function App() {
+  const [loggedIn, setLoggedIn] = useState(false);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios
+        .post("/user/login")
+        .then((res) => {
+          if (res.data.success) {
+            setLoggedIn(true);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [loggedIn]);
+
   const theme = createTheme({
     palette: {
       mode: "dark",
