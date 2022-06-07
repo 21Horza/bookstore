@@ -21,7 +21,7 @@ class UserService {
 
         const errors = validationResult(req).formatWith(errorFormater)
         if(!errors.isEmpty()) {
-            return res.status(400).json({message: "Password or email is invalid:", errors: errors.array()});
+            return ({message: "Password or email is invalid:", errors: errors.array()});
         }
 
         const {email, password} = req.body;
