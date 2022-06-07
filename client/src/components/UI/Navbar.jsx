@@ -16,17 +16,26 @@ import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import "../../styles/Navbar.css";
 import Signup from "./Signup";
+import Login from "./Login";
 
 const pages = ["All Books", "Publish"];
 const settings = ["Signup", "Login", "Logout"];
 
-const ResponsiveAppBar = () => {
+const ResponsiveAppBar = ({ user, setUser }) => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const [open, setOpen] = React.useState(false);
+  const handleSignupOpen = () => setSignupOpen(true);
+  const handleLoginOpen = () => setLoginOpen(true);
+  const handleSignupClose = () => setSignupOpen(false);
+  const handleLoginClose = () => setLoginOpen(false);
+  const [signupOpen, setSignupOpen] = React.useState(false);
+  const [loginOpen, setLoginOpen] = React.useState(false);
+
+  const handleLogout = (e) => {
+    localStorage.removeItem("token");
+    setUser(false);
+  };
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -136,6 +145,7 @@ const ResponsiveAppBar = () => {
                   marginRight: "10px",
                 }}
                 variant="contained"
+                disabled={page === "Publish" && !user}
               >
                 {page}
               </Button>
@@ -169,13 +179,35 @@ const ResponsiveAppBar = () => {
                   key={setting}
                   onClick={() => {
                     handleCloseUserMenu();
-                    setting === "Signup" ? handleOpen() : handleClose();
+                    !user && setting === "Signup"
+                      ? handleSignupOpen()
+                      : handleSignupClose();
+                    !user && setting === "Login"
+                      ? handleLoginOpen()
+                      : handleLoginClose();
+                    user && setting === "Logout" && handleLogout();
+                  }}
+                  sx={{
+                    display: () => {
+                      if (user && setting === "Logout") {
+                        return "block";
+                      } else if (!user && setting !== "Logout") {
+                        return "block";
+                      } else {
+                        return "none";
+                      }
+                    },
                   }}
                 >
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
-              <Signup open={open} handleClose={handleClose} />
+              <Signup open={signupOpen} handleClose={handleSignupClose} />
+              <Login
+                open={loginOpen}
+                handleClose={handleLoginClose}
+                setUser={setUser}
+              />
             </Menu>
           </Box>
         </Toolbar>
