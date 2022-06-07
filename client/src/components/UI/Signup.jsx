@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, TextField, Box, Typography, Button } from "@mui/material";
+import { red, green } from "@mui/material/colors";
 import axios from "../../utils/axios";
 import { useEffect } from "react";
 const style = {
@@ -18,13 +19,38 @@ const Signup = ({ open, handleClose }) => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [passwordConfirm, setPasswordConfirm] = React.useState("");
+  const [responseMsg, setResponseMsg] = React.useState("");
+  const [statusCode, setStatusCode] = React.useState(0);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    let formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+
+    axios
+      .post("/user/registration", formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        if (res.status !== 200) setResponseMsg(res.data.errors[0]);
+        else {
+          setStatusCode(res.status);
+          setResponseMsg("User created successfully");
+        }
+      })
+      .catch((err) => {
+        if (err) setResponseMsg(err.response.data.message);
+      });
   };
 
   useEffect(() => {
     setPasswordConfirm("");
+    setResponseMsg("");
+    setStatusCode(0);
   }, [open]);
 
   return (
@@ -45,6 +71,7 @@ const Signup = ({ open, handleClose }) => {
           >
             Please fill out the text fields
           </Typography>
+
           <TextField
             id="email"
             label="Email"
@@ -78,6 +105,12 @@ const Signup = ({ open, handleClose }) => {
                 : ""
             }
           />
+          <Typography
+            variant="subtitle2"
+            color={statusCode === 200 ? green[500] : red[500]}
+          >
+            {responseMsg}
+          </Typography>
           <Box textAlign="right">
             <Button
               type="submit"
