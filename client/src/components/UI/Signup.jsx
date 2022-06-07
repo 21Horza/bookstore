@@ -1,9 +1,7 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
-
+import React from "react";
+import { Modal, TextField, Box, Typography, Button } from "@mui/material";
+import axios from "../../utils/axios";
+import { useEffect } from "react";
 const style = {
   position: "absolute",
   top: "50%",
@@ -16,29 +14,90 @@ const style = {
   p: 4,
 };
 
-export default function BasicModal() {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+const Signup = ({ open, handleClose }) => {
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [passwordConfirm, setPasswordConfirm] = React.useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
+
+  useEffect(() => {
+    setPasswordConfirm("");
+  }, [open]);
 
   return (
-    <div>
-      <Button onClick={handleOpen}>Open modal</Button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
+    <Modal
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box sx={style}>
+        <form method="post" onSubmit={handleSubmit}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Text in a modal
+            Signup
           </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+          <Typography
+            id="modal-modal-description"
+            sx={{ mt: 2, marginBottom: "10px" }}
+          >
+            Please fill out the text fields
           </Typography>
-        </Box>
-      </Modal>
-    </div>
+          <TextField
+            id="email"
+            label="Email"
+            variant="outlined"
+            fullWidth={true}
+            margin="dense"
+            type="email"
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            id="password"
+            label="Password"
+            variant="outlined"
+            fullWidth={true}
+            margin="dense"
+            type="password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <TextField
+            error={password !== passwordConfirm && passwordConfirm.length > 0}
+            id="passwordConfirm"
+            label="Password Confirmation"
+            variant="outlined"
+            fullWidth={true}
+            margin="dense"
+            type="password"
+            onChange={(e) => setPasswordConfirm(e.target.value)}
+            helperText={
+              password !== passwordConfirm && passwordConfirm.length > 0
+                ? "Passwords do not match"
+                : ""
+            }
+          />
+          <Box textAlign="right">
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{ margin: "5px" }}
+              disabled={
+                !(
+                  password === passwordConfirm &&
+                  password.length > 0 &&
+                  email.length > 0
+                )
+              }
+            >
+              Signup
+            </Button>
+          </Box>
+        </form>
+      </Box>
+    </Modal>
   );
-}
+};
+
+export default Signup;
