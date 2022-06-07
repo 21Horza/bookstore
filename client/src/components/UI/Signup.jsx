@@ -30,11 +30,7 @@ const Signup = ({ open, handleClose }) => {
     formData.append("password", password);
 
     axios
-      .post("/user/registration", formData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
+      .post("/user/registration", formData)
       .then((res) => {
         if (res.status !== 200) setResponseMsg(res.data.errors[0]);
         else {
