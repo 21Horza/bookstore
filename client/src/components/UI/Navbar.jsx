@@ -15,13 +15,18 @@ import BookIcon from "@mui/icons-material/Book";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import "../../styles/Navbar.css";
+import Signup from "./Signup";
 
 const pages = ["All Books", "Publish"];
-const settings = ["Login", "Logout"];
+const settings = ["Signup", "Login", "Logout"];
 
 const ResponsiveAppBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const [open, setOpen] = React.useState(false);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -160,10 +165,17 @@ const ResponsiveAppBar = () => {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                <MenuItem
+                  key={setting}
+                  onClick={() => {
+                    handleCloseUserMenu();
+                    setting === "Signup" ? handleOpen() : handleClose();
+                  }}
+                >
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
+              <Signup open={open} handleClose={handleClose} />
             </Menu>
           </Box>
         </Toolbar>
