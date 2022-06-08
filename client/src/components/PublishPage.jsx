@@ -27,6 +27,7 @@ const PublishPage = () => {
   });
   const [responseMsg, setResponseMsg] = useState("");
   const [statusCode, setStatusCode] = useState(0);
+  const [base64, setBase64] = useState("");
 
   const handleDateChange = (date) => {
     setBook({
@@ -37,10 +38,11 @@ const PublishPage = () => {
 
   const handleImageChange = (e) => {
     let file = e.target.files[0];
+    setBook({ ...book, picture: file });
     let reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-      setBook({ ...book, picture: reader.result });
+      setBase64(reader.result);
     };
   };
 
@@ -96,11 +98,7 @@ const PublishPage = () => {
             <CardHeader subheader="preview" />
             <CardMedia
               component="img"
-              image={
-                book.picture
-                  ? book.picture
-                  : "https://via.placeholder.com/400x300"
-              }
+              image={base64 ? base64 : "https://via.placeholder.com/400x300"}
             />
             <CardActions sx={{ position: "absolute", bottom: 0 }}>
               <Button variant="contained" component="label">
