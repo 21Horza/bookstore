@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Card,
@@ -9,30 +10,35 @@ import {
   Typography,
   Container,
 } from "@mui/material";
+import { MobileDatePicker, LocalizationProvider } from "@mui/lab";
+import AdapterDateFns from "@date-io/date-fns";
 import { green, red } from "@mui/material/colors";
+
 import axios from "axios";
 import { useState } from "react";
 import "../styles/PublishPage.css";
-
 const PublishPage = () => {
   const [book, setBook] = useState({
     title: "",
     author: "",
     description: "",
-    image: {},
-    published: "",
+    picture: "",
+    published: new Date("2014-08-18T21:11:54"),
   });
-  const [base64, setBase64] = useState("");
   const [responseMsg, setResponseMsg] = useState("");
   const [statusCode, setStatusCode] = useState(0);
 
+  const handleDateChange = (newValue) => {
+    console.log(newValue);
+    setBook({ ...book, published: newValue });
+  };
+
   const handleImageChange = (e) => {
     let file = e.target.files[0];
-    setBook({ ...book, image: file });
     let reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-      setBase64(reader.result);
+      setBook({ ...book, picture: reader.result });
     };
   };
 
@@ -45,24 +51,31 @@ const PublishPage = () => {
 
     formData.append("title", book.title);
     formData.append("author", book.author);
-    formData.append("image", book.image);
+    formData.append("picture", book.picture);
     formData.append("description", book.description);
-    formData.append("publish_date:", book.published);
-    axios
-      .post("/books/create", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "multipart/form-data",
-        },
-        formData,
-      })
+    formData.append("publish_date", book.published);
+
+    // axios.defaults.headers.common = {
+    //   Authorization: `Bearer ${localStorage.getItem("token")}`,
+    //   "Content-Type": "multipart/form-data",
+    // };
+
+    axios({
+      method: "post",
+      url: "http://localhost:5000/books/create",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "multipart/form-data",
+      },
+      data: formData,
+    })
       .then((res) => {
         console.log(res);
         setStatusCode(res.status);
         setResponseMsg("Published successfully!");
       })
       .catch((err) => {
-        console.log(err);
+        console.log("err", err);
         setResponseMsg(err.response.data.message);
       });
   };
@@ -81,7 +94,11 @@ const PublishPage = () => {
             <CardHeader subheader="preview" />
             <CardMedia
               component="img"
-              image={base64 ? base64 : "https://via.placeholder.com/400x300"}
+              image={
+                book.picture
+                  ? book.picture
+                  : "https://via.placeholder.com/400x300"
+              }
             />
             <CardActions sx={{ position: "absolute", bottom: 0 }}>
               <Button variant="contained" component="label">
@@ -114,7 +131,7 @@ const PublishPage = () => {
                 marginTop: "20px",
               }}
             >
-              <TextField
+              {/* <TextField
                 id="outlined-basic"
                 label="Date"
                 variant="outlined"
@@ -124,7 +141,16 @@ const PublishPage = () => {
                 onChange={(e) =>
                   setBook({ ...book, published: e.target.value })
                 }
-              />
+              /> */}
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <MobileDatePicker
+                  label="Date mobile"
+                  inputFormat="MM/dd/yyyy"
+                  value={book.published}
+                  onChange={handleDateChange}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
               <TextField
                 id="outlined-basic"
                 label="Author"
