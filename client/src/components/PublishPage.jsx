@@ -1,87 +1,100 @@
-import { Container } from "@mui/material";
-import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import {
+  Box,
+  Card,
+  CardMedia,
+  TextField,
+  Button,
+  CardActions,
+  CardHeader,
+  Typography,
+  Container,
+} from "@mui/material";
+import { green, red } from "@mui/material/colors";
 import axios from "axios";
-import { Box, Card, CardMedia, TextField, Button } from "@mui/material";
 import { useState } from "react";
 import "../styles/PublishPage.css";
-import { CardActions } from "@mui/material";
 
 const PublishPage = () => {
-  const { id } = useParams();
-  const [book, setBook] = useState({});
-  useEffect(() => {
-    // axios
-    //   .get(`http://localhost:5000/books/${id}`)
-    //   .then((res) => {
-    //     console.log(res.data);
-    //     setBook(res.data);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
-    setBook({
-      id: 1,
-      title: "The Alchemist",
-      author: "Paulo Coelho",
-      image:
-        "https://images-na.ssl-images-amazon.com/images/I/51Zymoq7UnL._SX331_BO1,204,203,200_.jpg",
-      price: "12.99",
-      rating: 4.5,
-      description:
-        '"The Alchemist" is a novel by Brazilian author Paulo Coelho. It is the story of Santiago, an Andalusian shepherd',
-      published: "2006",
-    });
-  }, [id]);
+  const [book, setBook] = useState({
+    title: "",
+    author: "",
+    description: "",
+    image: {},
+    published: "",
+  });
+  const [base64, setBase64] = useState("");
+  const [responseMsg, setResponseMsg] = useState("");
+  const [statusCode, setStatusCode] = useState(0);
+
+  const handleImageChange = (e) => {
+    let file = e.target.files[0];
+    setBook({ ...book, image: file });
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      setBase64(reader.result);
+    };
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("submit");
     const formData = new FormData();
+
+    console.log("book", book);
+
     formData.append("title", book.title);
     formData.append("author", book.author);
     formData.append("image", book.image);
     formData.append("description", book.description);
+    formData.append("publish_date:", book.published);
     axios
-      .post("http://localhost:5000/books", {
-        // headers: {
-        //   'Authorization': `Bearer ${localStorage.getItem('token')}`
-        //   Authorization: `Bearer "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyOWNjYmVmZWJiM2Q4MGY1NTI3YjQyOCIsInJvbGVzIjpbIlVTRVIiXSwiaWF0IjoxNjU0NDQzMzQxLCJleHAiOjE2NTQ0NTQxNDF9.8T3qTVP4XetFQRkZG32gdqBv9vUpw6Pd9AEpOp2o76E"`,
-        // },
+      .post("/books/create", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "multipart/form-data",
+        },
         formData,
       })
       .then((res) => {
         console.log(res);
+        setStatusCode(res.status);
+        setResponseMsg("Published successfully!");
       })
       .catch((err) => {
         console.log(err);
+        setResponseMsg(err.response.data.message);
       });
   };
 
   return (
     <Container>
-      <Box
-        sx={{
-          display: "grid",
-          gap: 10,
-        }}
-        className="info-grid"
-      >
-        <Card>
-          book cover
-          <CardMedia
-            component="img"
-            image={id ? book.image : "https://via.placeholder.com/300x400"}
-          />
-          <CardActions>
-            <Button>Upload</Button>
-          </CardActions>
-        </Card>
-        <Card
+      <form method="post" onSubmit={handleSubmit}>
+        <Box
           sx={{
-            padding: "10px",
+            display: "grid",
+            gap: 10,
           }}
+          className="info-grid"
         >
-          <Box component="form" onSubmit={handleSubmit}>
+          <Card sx={{ position: "relative" }}>
+            <CardHeader subheader="preview" />
+            <CardMedia
+              component="img"
+              image={base64 ? base64 : "https://via.placeholder.com/400x300"}
+            />
+            <CardActions sx={{ position: "absolute", bottom: 0 }}>
+              <Button variant="contained" component="label">
+                Upload image
+                <input type="file" hidden onChange={handleImageChange} />
+              </Button>
+            </CardActions>
+          </Card>
+          <Card
+            sx={{
+              padding: "10px",
+            }}
+          >
             <Box textAlign="center">
               <TextField
                 id="outlined-basic"
@@ -90,6 +103,7 @@ const PublishPage = () => {
                 sx={{
                   width: "50%",
                 }}
+                onChange={(e) => setBook({ ...book, title: e.target.value })}
               />
             </Box>
             <Box
@@ -107,6 +121,9 @@ const PublishPage = () => {
                 sx={{
                   width: "100%",
                 }}
+                onChange={(e) =>
+                  setBook({ ...book, published: e.target.value })
+                }
               />
               <TextField
                 id="outlined-basic"
@@ -115,6 +132,7 @@ const PublishPage = () => {
                 sx={{
                   width: "100%",
                 }}
+                onChange={(e) => setBook({ ...book, author: e.target.value })}
               />
             </Box>
             <Box
@@ -132,6 +150,9 @@ const PublishPage = () => {
                   width: "100%",
                 }}
                 rows={12}
+                onChange={(e) =>
+                  setBook({ ...book, description: e.target.value })
+                }
               />
             </Box>
             <Box
@@ -148,13 +169,20 @@ const PublishPage = () => {
                   width: "100%",
                 }}
                 color="secondary"
+                type="submit"
               >
                 Publish
               </Button>
             </Box>
-          </Box>
-        </Card>
-      </Box>
+            <Typography
+              variant="subtitle2"
+              color={statusCode === 200 ? green[500] : red[500]}
+            >
+              {responseMsg}
+            </Typography>
+          </Card>
+        </Box>
+      </form>
     </Container>
   );
 };
