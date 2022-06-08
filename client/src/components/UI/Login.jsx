@@ -2,6 +2,7 @@ import React from "react";
 import { Modal, TextField, Box, Typography, Button } from "@mui/material";
 import { red, green } from "@mui/material/colors";
 import axios from "../../utils/axios";
+import { useEffect } from "react";
 const style = {
   position: "absolute",
   top: "50%",
@@ -44,6 +45,11 @@ const Login = ({ open, handleClose, setUser }) => {
         if (err) setResponseMsg(err.response.data.message);
       });
   };
+
+  useEffect(() => {
+    setResponseMsg("");
+    setStatusCode(0);
+  }, [open]);
 
   return (
     <Modal
