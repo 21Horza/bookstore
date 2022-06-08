@@ -14,9 +14,11 @@ import {
 import BookIcon from "@mui/icons-material/Book";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import "../../styles/Navbar.css";
+import { useNavigate, useLocation } from "react-router-dom";
+
 import Signup from "./Signup";
 import Login from "./Login";
+import "../../styles/Navbar.css";
 
 const pages = ["All Books", "Publish"];
 const settings = ["Signup", "Login", "Logout"];
@@ -31,10 +33,19 @@ const ResponsiveAppBar = ({ user, setUser }) => {
   const handleLoginClose = () => setLoginOpen(false);
   const [signupOpen, setSignupOpen] = React.useState(false);
   const [loginOpen, setLoginOpen] = React.useState(false);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  const handlePages = (e) => {
+    console.log(pathname);
+    if (e.target.innerText !== "PUBLISH") navigate("/");
+    else navigate(`/${e.target.innerText.toLowerCase()}`);
+  };
 
   const handleLogout = (e) => {
     localStorage.removeItem("token");
     setUser(false);
+    navigate("/");
   };
 
   const handleOpenNavMenu = (event) => {
@@ -134,22 +145,28 @@ const ResponsiveAppBar = ({ user, setUser }) => {
             sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
             className="nav-menu-md"
           >
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{
-                  my: 2,
-                  color: "white",
-                  display: "block",
-                  marginRight: "10px",
-                }}
-                variant="contained"
-                disabled={page === "Publish" && !user}
-              >
-                {page}
-              </Button>
-            ))}
+            <Button
+              onClick={handleCloseNavMenu}
+              onFocus={handlePages}
+              sx={{ my: 2, color: "white", display: "block", margin: "3px" }}
+              variant={pathname === "/" ? "contained" : "secondary"}
+            >
+              All Books
+            </Button>
+            <Button
+              onClick={handleCloseNavMenu}
+              onFocus={handlePages}
+              sx={{
+                my: 2,
+                color: "white",
+                display: "block",
+                margin: "3px",
+              }}
+              variant={pathname === "/publish" ? "contained" : "secondary"}
+              disabled={pathname === "/publish" && !user}
+            >
+              PUBLISH
+            </Button>
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
