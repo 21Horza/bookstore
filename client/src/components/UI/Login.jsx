@@ -15,40 +15,38 @@ const style = {
   p: 4,
 };
 
-const Signup = ({ open, handleClose }) => {
+const Login = ({ open, handleClose, setUser }) => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [passwordConfirm, setPasswordConfirm] = React.useState("");
   const [responseMsg, setResponseMsg] = React.useState("");
   const [statusCode, setStatusCode] = React.useState(0);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append("email", email);
     formData.append("password", password);
 
     axios
-      .post("/user/registration", formData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
+      .post("/user/login", formData)
       .then((res) => {
         if (res.status !== 200) setResponseMsg(res.data.errors[0]);
         else {
+          console.log(res.data.token);
+          localStorage.setItem("token", res.data.token);
+          setUser(true);
           setStatusCode(res.status);
-          setResponseMsg("User created successfully");
+          handleClose();
         }
       })
       .catch((err) => {
+        console.log("err", err);
         if (err) setResponseMsg(err.response.data.message);
       });
   };
 
   useEffect(() => {
-    setPasswordConfirm("");
     setResponseMsg("");
     setStatusCode(0);
   }, [open]);
@@ -63,7 +61,7 @@ const Signup = ({ open, handleClose }) => {
       <Box sx={style}>
         <form method="post" onSubmit={handleSubmit}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Signup
+            Login
           </Typography>
           <Typography
             id="modal-modal-description"
@@ -90,21 +88,6 @@ const Signup = ({ open, handleClose }) => {
             type="password"
             onChange={(e) => setPassword(e.target.value)}
           />
-          <TextField
-            error={password !== passwordConfirm && passwordConfirm.length > 0}
-            id="passwordConfirm"
-            label="Password Confirmation"
-            variant="outlined"
-            fullWidth={true}
-            margin="dense"
-            type="password"
-            onChange={(e) => setPasswordConfirm(e.target.value)}
-            helperText={
-              password !== passwordConfirm && passwordConfirm.length > 0
-                ? "Passwords do not match"
-                : ""
-            }
-          />
           <Typography
             variant="subtitle2"
             color={statusCode === 200 ? green[500] : red[500]}
@@ -116,15 +99,9 @@ const Signup = ({ open, handleClose }) => {
               type="submit"
               variant="contained"
               sx={{ margin: "5px" }}
-              disabled={
-                !(
-                  password === passwordConfirm &&
-                  password.length > 0 &&
-                  email.length > 0
-                )
-              }
+              disabled={!(password.length > 0 && email.length > 0)}
             >
-              Signup
+              Login
             </Button>
           </Box>
         </form>
@@ -133,4 +110,4 @@ const Signup = ({ open, handleClose }) => {
   );
 };
 
-export default Signup;
+export default Login;
