@@ -1,8 +1,11 @@
 const Book = require("../models/Book");
+const sharp = require('sharp');
 
 class BookService {
     async create(req, res) {
-        const {title, author, description, publish_date, picture} = req.body;
+        const {title, author, description, publish_date} = req.body;
+        const {picture} = req.files
+        console.log(picture)
 
         const foundBook = await Book.findOne({title});
 
@@ -10,7 +13,9 @@ class BookService {
             throw new Error(`Book with title ${title} already exists`);
         }
 
-        const createdBook = await Book.create({title, author, description, publish_date, picture});
+        const imgResized = await sharp(picture.data).resize(329, 502).png().toBuffer();
+
+        const createdBook = await Book.create({title, author, description, publish_date, picture: imgResized});
         return createdBook;
     }
 
