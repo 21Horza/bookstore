@@ -4,6 +4,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/UI/Navbar";
 import { useEffect, useState } from "react";
 
+import Home from "./components/HomePage";
+import PublishPage from "./components/PublishPage";
+import InfoPage from "./components/InfoPage";
+
 function App() {
   const [user, setUser] = useState(null);
   useEffect(() => {
@@ -35,7 +39,9 @@ function App() {
       <Router>
         <Navbar user={user} setUser={setUser} />
         <Routes>
-          <Route path="/" element={<div>Hello world</div>} />
+          <Route path="/" element={<Home />} />
+          <Route path="/info/:id" element={<InfoPage />} />
+          <Route path="/publish" element={<PublishPage />} />
         </Routes>
       </Router>
     </ThemeProvider>

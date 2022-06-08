@@ -163,7 +163,7 @@ const ResponsiveAppBar = ({ user, setUser }) => {
                 margin: "3px",
               }}
               variant={pathname === "/publish" ? "contained" : "secondary"}
-              disabled={pathname === "/publish" && !user}
+              disabled={!user}
             >
               PUBLISH
             </Button>
