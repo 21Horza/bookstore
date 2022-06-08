@@ -28,9 +28,11 @@ const PublishPage = () => {
   const [responseMsg, setResponseMsg] = useState("");
   const [statusCode, setStatusCode] = useState(0);
 
-  const handleDateChange = (newValue) => {
-    console.log(newValue);
-    setBook({ ...book, published: newValue });
+  const handleDateChange = (date) => {
+    setBook({
+      ...book,
+      published: date,
+    });
   };
 
   const handleImageChange = (e) => {
