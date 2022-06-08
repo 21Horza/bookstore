@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   AppBar,
   Box,
@@ -14,19 +14,39 @@ import {
 import BookIcon from "@mui/icons-material/Book";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import "../../styles/Navbar.css";
+import { useNavigate, useLocation } from "react-router-dom";
+
 import Signup from "./Signup";
+import Login from "./Login";
+import "../../styles/Navbar.css";
 
 const pages = ["All Books", "Publish"];
 const settings = ["Signup", "Login", "Logout"];
 
-const ResponsiveAppBar = () => {
+const ResponsiveAppBar = ({ user, setUser }) => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const [open, setOpen] = React.useState(false);
+  const handleSignupOpen = () => setSignupOpen(true);
+  const handleLoginOpen = () => setLoginOpen(true);
+  const handleSignupClose = () => setSignupOpen(false);
+  const handleLoginClose = () => setLoginOpen(false);
+  const [signupOpen, setSignupOpen] = React.useState(false);
+  const [loginOpen, setLoginOpen] = React.useState(false);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  const handlePages = (e) => {
+    console.log(pathname);
+    if (e.target.innerText !== "PUBLISH") navigate("/");
+    else navigate(`/${e.target.innerText.toLowerCase()}`);
+  };
+
+  const handleLogout = (e) => {
+    localStorage.removeItem("token");
+    setUser(false);
+    navigate("/");
+  };
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -125,21 +145,28 @@ const ResponsiveAppBar = () => {
             sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
             className="nav-menu-md"
           >
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{
-                  my: 2,
-                  color: "white",
-                  display: "block",
-                  marginRight: "10px",
-                }}
-                variant="contained"
-              >
-                {page}
-              </Button>
-            ))}
+            <Button
+              onClick={handleCloseNavMenu}
+              onFocus={handlePages}
+              sx={{ my: 2, color: "white", display: "block", margin: "3px" }}
+              variant={pathname === "/" ? "contained" : "secondary"}
+            >
+              All Books
+            </Button>
+            <Button
+              onClick={handleCloseNavMenu}
+              onFocus={handlePages}
+              sx={{
+                my: 2,
+                color: "white",
+                display: "block",
+                margin: "3px",
+              }}
+              variant={pathname === "/publish" ? "contained" : "secondary"}
+              disabled={!user}
+            >
+              PUBLISH
+            </Button>
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
@@ -169,13 +196,35 @@ const ResponsiveAppBar = () => {
                   key={setting}
                   onClick={() => {
                     handleCloseUserMenu();
-                    setting === "Signup" ? handleOpen() : handleClose();
+                    !user && setting === "Signup"
+                      ? handleSignupOpen()
+                      : handleSignupClose();
+                    !user && setting === "Login"
+                      ? handleLoginOpen()
+                      : handleLoginClose();
+                    user && setting === "Logout" && handleLogout();
+                  }}
+                  sx={{
+                    display: () => {
+                      if (user && setting === "Logout") {
+                        return "block";
+                      } else if (!user && setting !== "Logout") {
+                        return "block";
+                      } else {
+                        return "none";
+                      }
+                    },
                   }}
                 >
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
-              <Signup open={open} handleClose={handleClose} />
+              <Signup open={signupOpen} handleClose={handleSignupClose} />
+              <Login
+                open={loginOpen}
+                handleClose={handleLoginClose}
+                setUser={setUser}
+              />
             </Menu>
           </Box>
         </Toolbar>
