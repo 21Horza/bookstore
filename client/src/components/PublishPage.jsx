@@ -40,11 +40,12 @@ const PublishPage = () => {
 
   const handleImageChange = (e) => {
     let file = e.target.files[0];
-    // setBook({ ...book, picture: file });
+    setBook({ ...book, picture: file });
     let reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-      setBook({ ...book, picture: reader.result });
+      // reader.result is the base64 string
+      // setBook({ ...book, picture: reader.result });
       setBase64(reader.result);
     };
   };
