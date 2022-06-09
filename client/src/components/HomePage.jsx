@@ -1,13 +1,15 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Paper, Box, Container, styled, Grid } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { Paper, Box, Container, styled, Grid, Typography } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
+import { Buffer } from "buffer";
+import axiosInstance from "../utils/axios";
 import Search from "./UI/Search";
 import Select from "./UI/Select";
-import "../styles/HomePage.css";
-import { useNavigate } from "react-router-dom";
-import axiosInstance from "../utils/axios";
 import BookCard from "./UI/BookCard";
-import { Buffer } from "buffer";
+import Loader from "./UI/Loader";
+import useFetching from "./hooks/useFetching";
+import "../styles/HomePage.css";
 
 const Home = () => {
   // const books = [
@@ -85,10 +87,10 @@ const Home = () => {
   //   },
   // ];
   const [books, setBooks] = useState([]);
-  const navigate = useNavigate();
-
   const [selectedSort, setSelectedSort] = useState("");
   const [searchInput, setSearchInput] = useState("");
+  const [found, setFound] = useState(false);
+  const navigate = useNavigate();
 
   // returns -1
   const sortedBooks = useMemo(() => {
@@ -109,36 +111,24 @@ const Home = () => {
     );
   }, [searchInput, sortedBooks]);
 
+  const [fetchBooks, err, showSuccess] = useFetching(async () => {
+    await axiosInstance.get("/books/info").then((res) => {
+      console.log(res.data);
+      setFound(true);
+      setBooks(
+        res.data.map((book) => {
+          return {
+            ...book,
+            picture: Buffer.from(book.picture, "base64").toString("base64"),
+          };
+        })
+      );
+    });
+  });
+
   useEffect(() => {
-    axiosInstance
-      .get("/books/info")
-      .then((res) => {
-        console.log(res.data);
-        // const data = res.data.map(
-        //   ({ _id, title, author, publish_date, description, picture }) => {
-        //     return {
-        //       _id,
-        //       title,
-        //       author,
-        //       publish_date,
-        //       description,
-        //       picture: btoa(String.fromCharCode(...new Uint8Array(picture))),
-        //     };
-        //   }
-        // );
-        setBooks(
-          res.data.map((book) => {
-            return {
-              ...book,
-              picture: Buffer.from(book.picture, "base64").toString("base64"),
-            };
-          })
-        );
-        // setBooks(data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    setFound(false);
+    setTimeout(() => fetchBooks(), 1000);
   }, []);
 
   const Item = styled(Paper)(({ theme }) => ({
@@ -184,36 +174,52 @@ const Home = () => {
               backgroundImage: "none",
             }}
           >
-            <Box
-              sx={{
-                display: "grid",
-                gap: 5,
-              }}
-              className="gallery-grid"
-            >
-              {searchInput
-                ? sortedAndSearchedBooks.map((item) => (
-                    <BookCard key={item._id} item={item} navigate={navigate} />
-                  ))
-                : selectedSort
-                ? sortedBooks.map((item) => (
-                    <BookCard key={item._id} item={item} navigate={navigate} />
-                  ))
-                : books.map((item) => (
-                    <BookCard key={item._id} item={item} navigate={navigate} />
-                  ))}
-
-              {/* {selectedSort
-                ? sortedBooks.map((item) => (
-                    <BookCard key={item._id} item={item} navigate={navigate} />
-                  )) : sortedAndSearchedBooks.map((item) => (
-                    <BookCard key={item._id} item={item} navigate={navigate} />
-                  ))?
-                : books.map((item) => (
-                    <BookCard key={item._id} item={item} navigate={navigate} />
-                  ))} */}
-              <Box sx={{ height: "10px" }}></Box>
-            </Box>
+            {books.length > 0 && found ? (
+              <Box
+                sx={{
+                  display: "grid",
+                  gap: 5,
+                }}
+                className="gallery-grid"
+              >
+                {searchInput
+                  ? sortedAndSearchedBooks.map((item) => (
+                      <BookCard
+                        key={item._id}
+                        item={item}
+                        navigate={navigate}
+                      />
+                    ))
+                  : selectedSort
+                  ? sortedBooks.map((item) => (
+                      <BookCard
+                        key={item._id}
+                        item={item}
+                        navigate={navigate}
+                      />
+                    ))
+                  : books.map((item) => (
+                      <BookCard
+                        key={item._id}
+                        item={item}
+                        navigate={navigate}
+                      />
+                    ))}
+              </Box>
+            ) : (
+              <Box
+                sx={{
+                  display: "flex",
+                  height: "50%",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Typography variant="h3" component="h1">
+                  {found ? "No books found" : <Loader />}
+                </Typography>
+              </Box>
+            )}
           </Item>
         </Grid>
       </Grid>
