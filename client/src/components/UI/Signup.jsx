@@ -15,7 +15,7 @@ const style = {
   p: 4,
 };
 
-const Signup = ({ open, handleClose }) => {
+const Signup = ({ open, handleClose, setSuccess, setSuccessType }) => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [passwordConfirm, setPasswordConfirm] = React.useState("");
@@ -40,9 +40,13 @@ const Signup = ({ open, handleClose }) => {
         else {
           setStatusCode(res.status);
           setResponseMsg("User created successfully");
+          setSuccess(true);
+          setSuccessType("signup");
+          handleClose();
         }
       })
       .catch((err) => {
+        console.log(err);
         if (err) setResponseMsg(err.response.data.message);
       });
   };

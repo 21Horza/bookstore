@@ -10,13 +10,14 @@ import {
   Typography,
   Container,
 } from "@mui/material";
-import { MobileDatePicker, LocalizationProvider } from "@mui/lab";
+import { MobileDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import AdapterDateFns from "@date-io/date-fns";
 import { green, red } from "@mui/material/colors";
 
 import axios from "axios";
 import { useState } from "react";
 import "../styles/PublishPage.css";
+import { Navigate, useNavigate } from "react-router-dom";
 const PublishPage = () => {
   const [book, setBook] = useState({
     title: "",
@@ -28,6 +29,7 @@ const PublishPage = () => {
   const [responseMsg, setResponseMsg] = useState("");
   const [statusCode, setStatusCode] = useState(0);
   const [base64, setBase64] = useState("");
+  const navigate = useNavigate();
 
   const handleDateChange = (date) => {
     setBook({
@@ -38,10 +40,11 @@ const PublishPage = () => {
 
   const handleImageChange = (e) => {
     let file = e.target.files[0];
-    setBook({ ...book, picture: file });
+    // setBook({ ...book, picture: file });
     let reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
+      setBook({ ...book, picture: reader.result });
       setBase64(reader.result);
     };
   };
@@ -77,6 +80,7 @@ const PublishPage = () => {
         console.log(res);
         setStatusCode(res.status);
         setResponseMsg("Published successfully!");
+        navigate("/");
       })
       .catch((err) => {
         console.log("err", err);
