@@ -8,9 +8,13 @@ import { useEffect, useState } from "react";
 import Home from "./components/HomePage";
 import PublishPage from "./components/PublishPage";
 import InfoPage from "./components/InfoPage";
+import Success from "./components/UI/SuccessModal";
 
 function App() {
   const [user, setUser] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [successType, setSuccessType] = useState("");
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     console.log(token);
@@ -38,9 +42,19 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <Navbar user={user} setUser={setUser} />
+        <Navbar
+          user={user}
+          setUser={setUser}
+          setSuccess={setSuccess}
+          setSuccessType={setSuccessType}
+        />
+        <Success
+          setSuccess={setSuccess}
+          success={success}
+          successType={successType}
+        />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home setSuccess={setSuccess} />} />
           <Route path="/info/:id" element={<InfoPage />} />
           <Route path="/publish" element={<PublishPage />} />
         </Routes>
