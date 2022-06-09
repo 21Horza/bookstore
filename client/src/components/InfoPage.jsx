@@ -27,6 +27,7 @@ const InfoPage = () => {
         setBook({
           ...res.data,
           publish_date: new Date(res.data.publish_date).toLocaleDateString(),
+          picture: Buffer.from(res.data.picture, "base64").toString("base64"),
         });
       })
       .catch((err) => {
@@ -58,7 +59,11 @@ const InfoPage = () => {
         <Card>
           <CardMedia
             component="img"
-            image={id ? book.picture : "https://via.placeholder.com/300x400"}
+            image={
+              id
+                ? `data:image/png;base64, ${book.picture}`
+                : "https://via.placeholder.com/300x400"
+            }
           />
         </Card>
         <Card

@@ -7,6 +7,7 @@ import "../styles/HomePage.css";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axios";
 import BookCard from "./UI/BookCard";
+import { Buffer } from "buffer";
 
 const Home = () => {
   // const books = [
@@ -113,7 +114,27 @@ const Home = () => {
       .get("/books/info")
       .then((res) => {
         console.log(res.data);
-        setBooks(res.data);
+        // const data = res.data.map(
+        //   ({ _id, title, author, publish_date, description, picture }) => {
+        //     return {
+        //       _id,
+        //       title,
+        //       author,
+        //       publish_date,
+        //       description,
+        //       picture: btoa(String.fromCharCode(...new Uint8Array(picture))),
+        //     };
+        //   }
+        // );
+        setBooks(
+          res.data.map((book) => {
+            return {
+              ...book,
+              picture: Buffer.from(book.picture, "base64").toString("base64"),
+            };
+          })
+        );
+        // setBooks(data);
       })
       .catch((err) => {
         console.log(err);
