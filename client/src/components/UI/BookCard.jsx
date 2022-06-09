@@ -20,7 +20,7 @@ const BookCard = ({ item, navigate }) => {
           justifyContent: "end",
         }}
       >
-        <Button size="small" onClick={() => navigate(`/info/${item.id}`)}>
+        <Button size="small" onClick={() => navigate(`/info/${item._id}`)}>
           More info
         </Button>
       </CardActions>
