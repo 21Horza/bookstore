@@ -19,11 +19,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Signup from "./Signup";
 import Login from "./Login";
 import "../../styles/Navbar.css";
+import { styled } from "@mui/material";
 
-const pages = ["All Books", "Publish"];
 const settings = ["Signup", "Login", "Logout"];
 
-const ResponsiveAppBar = ({ user, setUser }) => {
+const ResponsiveAppBar = ({ user, setUser, setSuccess, setSuccessType }) => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -63,6 +63,8 @@ const ResponsiveAppBar = ({ user, setUser }) => {
     setAnchorElUser(null);
   };
 
+  const StyledMenuIcon = styled(MenuIcon)(({ theme }) => ({}));
+
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -95,7 +97,7 @@ const ResponsiveAppBar = ({ user, setUser }) => {
               onClick={handleOpenNavMenu}
               color="inherit"
             >
-              <MenuIcon />
+              <StyledMenuIcon />
             </IconButton>
             <Menu
               id="menu-appbar"
@@ -115,11 +117,31 @@ const ResponsiveAppBar = ({ user, setUser }) => {
                 display: { xs: "block", md: "none" },
               }}
             >
-              {pages.map((page) => (
+              {/* {pages.map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
-              ))}
+              ))} */}
+              <MenuItem
+                onClick={(e) => {
+                  handleCloseNavMenu(e);
+                  handlePages(e);
+                }}
+                variant={pathname === "/" ? "contained" : "secondary"}
+              >
+                <Typography textAlign="center">ALL BOOKS</Typography>
+              </MenuItem>
+              <MenuItem
+                onClick={(e) => {
+                  handleCloseNavMenu(e);
+                  handlePages(e);
+                }}
+                onFocus={handlePages}
+                variant={pathname === "/publish" ? "contained" : "secondary"}
+                disabled={!user}
+              >
+                <Typography textAlign="center">PUBLISH</Typography>
+              </MenuItem>
             </Menu>
           </Box>
           <BookIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
@@ -219,7 +241,12 @@ const ResponsiveAppBar = ({ user, setUser }) => {
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
-              <Signup open={signupOpen} handleClose={handleSignupClose} />
+              <Signup
+                open={signupOpen}
+                handleClose={handleSignupClose}
+                setSuccess={setSuccess}
+                setSuccessType={setSuccessType}
+              />
               <Login
                 open={loginOpen}
                 handleClose={handleLoginClose}
