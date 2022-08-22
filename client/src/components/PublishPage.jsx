@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Card,
@@ -15,9 +15,7 @@ import AdapterDateFns from "@date-io/date-fns";
 import { green, red } from "@mui/material/colors";
 
 import axios from "axios";
-import { useState } from "react";
 import "../styles/PublishPage.css";
-import { Navigate, useNavigate } from "react-router-dom";
 const PublishPage = () => {
   const [book, setBook] = useState({
     title: "",
@@ -29,7 +27,6 @@ const PublishPage = () => {
   const [responseMsg, setResponseMsg] = useState("");
   const [statusCode, setStatusCode] = useState(0);
   const [base64, setBase64] = useState("");
-  const navigate = useNavigate();
 
   const handleDateChange = (date) => {
     setBook({
@@ -52,39 +49,27 @@ const PublishPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("submit");
     const formData = new FormData();
-
-    console.log("book", book);
-
     formData.append("title", book.title);
     formData.append("author", book.author);
     formData.append("picture", book.picture);
     formData.append("description", book.description);
     formData.append("publish_date", book.published);
 
-    // axios.defaults.headers.common = {
-    //   Authorization: `Bearer ${localStorage.getItem("token")}`,
-    //   "Content-Type": "multipart/form-data",
-    // };
-
     axios({
       method: "post",
       url: "http://localhost:5000/books/create",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
-        "Content-Type": "multipart/form-data",
       },
       data: formData,
     })
       .then((res) => {
-        console.log(res);
         setStatusCode(res.status);
         setResponseMsg("Published successfully!");
         navigate("/");
       })
       .catch((err) => {
-        console.log("err", err);
         setResponseMsg(err.response.data.message);
       });
   };
@@ -136,17 +121,6 @@ const PublishPage = () => {
                 marginTop: "20px",
               }}
             >
-              {/* <TextField
-                id="outlined-basic"
-                label="Date"
-                variant="outlined"
-                sx={{
-                  width: "100%",
-                }}
-                onChange={(e) =>
-                  setBook({ ...book, published: e.target.value })
-                }
-              /> */}
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <MobileDatePicker
                   label="Date mobile"

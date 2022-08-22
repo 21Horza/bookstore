@@ -33,19 +33,6 @@ const InfoPage = () => {
       .catch((err) => {
         console.log(err);
       });
-    // const data = {
-    //   id: 1,
-    //   title: "The Alchemist",
-    //   author: "Paulo Coelho",
-    //   image:
-    //     "https://images-na.ssl-images-amazon.com/images/I/51Zymoq7UnL._SX331_BO1,204,203,200_.jpg",
-    //   price: "12.99",
-    //   rating: 4.5,
-    //   description:
-    //     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Faucibus vitae aliquet nec ullamcorper sit. Pellentesque adipiscing commodo elit at imperdiet dui accumsan. Purus sit amet luctus venenatis lectus magna fringilla urna. Sed enim ut sem viverra. Condimentum lacinia quis vel eros donec ac odio. Nulla pharetra diam sit amet nisl suscipit adipiscing bibendum est. Dolor purus non enim praesent elementum facilisis leo vel fringilla. Orci eu lobortis elementum nibh. Leo duis ut diam quam nulla porttitor. Pretium viverra suspendisse potenti nullam ac tortor vitae purus.",
-    //   published: "2006",
-    // };
-    // setBook(data);
   }, [id]);
   return (
     <Container>
