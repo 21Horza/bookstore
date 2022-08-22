@@ -1,8 +1,8 @@
-Bookstore.
+Bookpage
 Available at https://bookstore21app.herokuapp.com/
 =============================================
 
-The bookstore is designed to publish favourite books and share with others. The project was built as a collab practice with NEARworld (https://github.com/NEARworld)
+The bookpage is designed to publish favourite books and share with others. The project was built as a collab practice with NEARworld (https://github.com/NEARworld)
 
 ==============================================
 
